@@ -20,18 +20,17 @@ namespace Publisher
             using var scope = _serviceProvider.CreateScope();
             var busPublisher = scope.ServiceProvider.GetRequiredService<IBusPublisher>();
 
-            var publishModel = new TestPublish(BusConstants.ConsumerExchange, "")
+            var publishModel = new TestPublish(BusConstants.ConsumerFanoutExchange, "")
             {
                 MessageId = Guid.NewGuid(),
                 Number = 61,
                 Text = "Trabzon"
             };
 
-            var publishModel2 = new TestPublish(BusConstants.ConsumerExchange, "")
+            var publishModel2 = new ExamplePublish(BusConstants.ConsumerDirectExchange, BusConstants.ExampleRouteKey)
             {
                 MessageId = Guid.NewGuid(),
-                Number = 34,
-                Text = "Ýstanbul"
+                isSuccess = true,
             };
 
             await busPublisher.PublishAsync(publishModel);

@@ -22,7 +22,8 @@ namespace MessageBroker.Bus
                 VirtualHost = _configuration.VHost,
                 UserName = _configuration.UserName,
                 Password = _configuration.Password,
-                Port = _configuration.Port
+                Port = _configuration.Port,
+                DispatchConsumersAsync = true
             };
 
             _connection = factory.CreateConnection();

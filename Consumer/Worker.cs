@@ -20,8 +20,8 @@ namespace Consumer
             using var scope = _serviceProvider.CreateScope();
             var busSubcribe = scope.ServiceProvider.GetRequiredService<IBusSubcribe>();
 
-            await busSubcribe.SubcribeAsync<TestModel>(BusConstants.ConsumerExchange, BusConstants.TestQueue, "", MessageBroker.Enums.ExchangeTypes.Direct, ct: stoppingToken);
-            //await busSubcribe.SubcribeAsync<ExampleModel>(BusConstants.ConsumerExchange, BusConstants.ExampleQueue, "", MessageBroker.Enums.ExchangeTypes.Fanout, ct: stoppingToken);
+            await busSubcribe.SubcribeAsync<TestModel>(BusConstants.ConsumerFanoutExchange, BusConstants.TestQueue, "", MessageBroker.Enums.ExchangeTypes.Fanout, ct: stoppingToken);
+            await busSubcribe.SubcribeAsync<ExampleModel>(BusConstants.ConsumerDirectExchange, BusConstants.ExampleQueue, BusConstants.ExampleRouteKey, MessageBroker.Enums.ExchangeTypes.Direct, ct: stoppingToken);
         }
     }
 }

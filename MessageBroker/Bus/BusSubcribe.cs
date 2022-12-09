@@ -27,13 +27,14 @@ public class BusSubcribe : IBusSubcribe
             VirtualHost = _configuration.VHost,
             UserName = _configuration.UserName,
             Password = _configuration.Password,
-            Port = _configuration.Port
+            Port = _configuration.Port,
+            DispatchConsumersAsync = true
         };
 
         _connection = factory.CreateConnection();
     }
 
-    public async Task SubcribeAsync<TMessage>(
+    public Task SubcribeAsync<TMessage>(
         string exchangeName,
         string queueName,
         string routingKey,
@@ -100,6 +101,7 @@ public class BusSubcribe : IBusSubcribe
         /// autoAck: mesaj queue dan alındıktan sonra otomatik olarak silinmemesi için false olarak işaretledik. Başarılı bir şekilde mesaj işlenirse BasicAck metodu ile manuel olarak queue dan  mesajı silmesi için bildirimde bulunuyoruz
         _channel.BasicConsume(queue: queueName, autoAck: false, consumer: consumer);
 
+        return Task.CompletedTask;
     }
 
     private async Task<bool> TryHandleAsync<TMessage>(TMessage message) where TMessage : IMessage
@@ -110,7 +112,6 @@ public class BusSubcribe : IBusSubcribe
             var handler = scope.ServiceProvider.GetRequiredService<IMessageHandler<TMessage>>();
             await handler.HandleAsync(message);
             return true;
-
         }
         catch (Exception)
         {
