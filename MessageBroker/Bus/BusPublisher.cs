@@ -1,6 +1,5 @@
-﻿using MessageBroker.Configuration;
-using MessageBroker.Message;
-using Microsoft.Extensions.Options;
+﻿using MessageBroker.Message;
+using Microsoft.Extensions.ObjectPool;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
@@ -9,37 +8,22 @@ namespace MessageBroker.Bus
 {
     public class BusPublisher : IBusPublisher
     {
-        private readonly BusConfiguration _configuration;
-        private readonly IConnection _connection;
+        private readonly DefaultObjectPool<IModel> _objectPool;
 
-        public BusPublisher(IOptions<BusConfiguration> configuration)
+        public BusPublisher(IPooledObjectPolicy<IModel> objectPolicy)
         {
-            _configuration = configuration.Value;
-
-            var factory = new ConnectionFactory()
-            {
-                HostName = _configuration.HostName,
-                VirtualHost = _configuration.VHost,
-                UserName = _configuration.UserName,
-                Password = _configuration.Password,
-                Port = _configuration.Port,
-                DispatchConsumersAsync = true
-            };
-
-            _connection = factory.CreateConnection();
+            _objectPool = new DefaultObjectPool<IModel>(objectPolicy);
         }
 
         public Task PublishAsync<T>(T message, IBasicProperties? properties = null) where T : PublishedMessage
         {
             if (message == null)
-            {
                 return Task.CompletedTask;
-            }
+
+            var _channel = _objectPool.Get();
 
             try
             {
-                var _channel = _connection.CreateModel();
-
                 if (properties == null)
                 {
                     properties = _channel.CreateBasicProperties();
@@ -55,6 +39,10 @@ namespace MessageBroker.Bus
             catch (Exception)
             {
                 throw;
+            }
+            finally
+            {
+                _objectPool.Return(_channel);
             }
 
             return Task.CompletedTask;

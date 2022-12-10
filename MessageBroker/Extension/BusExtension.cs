@@ -1,8 +1,11 @@
 ﻿using MessageBroker.Bus;
 using MessageBroker.Configuration;
 using MessageBroker.Message;
+using MessageBroker.ObjectPool;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.ObjectPool;
+using RabbitMQ.Client;
 using System.Reflection;
 
 namespace MessageBroker.Extension;
@@ -15,8 +18,9 @@ public static class BusExtension
         services.AddSingleton<IBusSubcribe, BusSubcribe>();
         services.AddSingleton<IBusPublisher, BusPublisher>();
 		services.AddHandlers(assemblies);
+		services.AddSingleton<IPooledObjectPolicy<IModel>, BusPooledObjectPolicy>();
 
-        return services;
+		return services;
     }
 
 	private static IServiceCollection AddHandlers(this IServiceCollection services, params Assembly[] assemblies)

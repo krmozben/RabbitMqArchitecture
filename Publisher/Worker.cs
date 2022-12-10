@@ -24,7 +24,7 @@ namespace Publisher
             {
                 MessageId = Guid.NewGuid(),
                 Number = 61,
-                Text = "Trabzon"
+                Text = "abc"
             };
 
             var publishModel2 = new ExamplePublish(BusConstants.ConsumerDirectExchange, BusConstants.ExampleRouteKey)
@@ -35,6 +35,20 @@ namespace Publisher
 
             await busPublisher.PublishAsync(publishModel);
             await busPublisher.PublishAsync(publishModel2);
+
+
+            for (int i = 0; i <  500; i++)
+            {
+
+                var pm = new TestPublish(BusConstants.ConsumerFanoutExchange, "")
+                {
+                    MessageId = Guid.NewGuid(),
+                    Number = i,
+                    Text = "abc"
+                };
+
+                await busPublisher.PublishAsync(pm);
+            }
         }
     }
 }
