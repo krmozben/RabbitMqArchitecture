@@ -76,7 +76,10 @@ public class BusSubcribe : IBusSubcribe
                     /// mesajı başarılı olarak işlediğimiz taktirde ilgili queue dan mesaj silinmesi için bildirimde bulunuyoruz
                     /// multiple : true olması durumunda ram de işlenmiş ama message brokera bildirimi gitmemiş mesajlar varsa onlarıda gönderir, false diyerek sadece ilgili mesajın bildirimini yapmış oluyoruz.
                     /// deliveryTag : mesaj tag ını belirler
-                    _channel.BasicAck(ea.DeliveryTag, false);
+                    //_channel.BasicAck(ea.DeliveryTag, false);
+
+                    _channel.BasicNack(ea.DeliveryTag, false, false);
+
                 }
                 else
                 {

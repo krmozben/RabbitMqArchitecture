@@ -9,7 +9,7 @@ namespace Consumer.MessageHandlers
         {
             if (true)
             {
-                Console.WriteLine(message.Text);
+                Console.WriteLine(message.Text + " " + message.Number);
             }
             else
             {
