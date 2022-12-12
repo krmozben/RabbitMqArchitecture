@@ -80,6 +80,8 @@ public class BusSubcribe : IBusSubcribe
                 }
                 else
                 {
+                    /// mesajın başarısız olduğunu bildiriyoruz.
+                    /// reuqueue : mesaj tekrardan kuyruğa alınsınmı anlamına gelir.
                     _channel.BasicNack(ea.DeliveryTag, false, false);
                 }
             };
