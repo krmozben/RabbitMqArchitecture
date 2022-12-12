@@ -37,6 +37,15 @@ public class BusSubcribe : IBusSubcribe
 
         try
         {
+            /// Dead letter queue'ya ait ayarları yapıyoruz
+            var errorQueue = queueName + "_error";
+            var args = new Dictionary<string, object>();
+            args.Add("x-dead-letter-exchange", "dlx");
+            args.Add("x-dead-letter-routing-key", errorQueue);
+
+            /// gelen mesaj hatalı işlenmesi durumunda hata kuyruğuna bırakılabilmesi için dlx exchange i oluşturuyoruz.
+            _channel.ExchangeDeclare("dlx", ExchangeType.Direct);
+
             /// Exchange oluşturur
             /// durable: true ayarlanırsa exchange artık ram e değil disk e yazılır. Bu durumda rabbitmq restart vs.. olduğunda ilgili exchange silinmemiş olur.
             /// autoDelete : true ayarlanırsa bağlı olan son consumer da bağlantıyı keserse ilgili exchange silinir, false olursa exhange kalıcı hale gelmiş olur.
@@ -46,7 +55,7 @@ public class BusSubcribe : IBusSubcribe
             /// durable: true ayarlanırsa queue artık ram e değil disk e yazılır. Bu durumda rabbitmq restart vs.. olduğunda ilgili queue silinmemiş olur.
             /// autoDelete : true ayarlanırsa bağlı olan son consumer da bağlantıyı keserse ilgili queue silinir. false olursa queue kalıcı hale gelmiş olur.
             /// exclusive : true ayarlanırsa bu queue ya sadece bu kanaldan bağlantı açılabilir demek istemiş oluruz, false seçerek herhangi bir kanaldan bağlantıya izin vermiş oluyoruz.
-            _channel.QueueDeclare(queueName, durable: true, autoDelete: false, exclusive: false);
+            _channel.QueueDeclare(queueName, durable: true, autoDelete: false, exclusive: false, arguments: args);
 
             /// Bir queue yu exchange e bağlanmaya yarar
             _channel.QueueBind(queueName, exchangeName, routingKey);
@@ -80,6 +89,10 @@ public class BusSubcribe : IBusSubcribe
                 }
                 else
                 {
+                    /// mesaj hatalı işlenince ilgili queue için bir error queue su oluşturuyoruz
+                    _channel.QueueDeclare(errorQueue, durable: true, autoDelete: false, exclusive: false);
+                    _channel.QueueBind(errorQueue, "dlx", errorQueue);
+
                     /// mesajın başarısız olduğunu bildiriyoruz.
                     /// reuqueue : mesaj tekrardan kuyruğa alınsınmı anlamına gelir.
                     _channel.BasicNack(ea.DeliveryTag, false, false);

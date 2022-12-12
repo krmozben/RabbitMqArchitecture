@@ -7,7 +7,7 @@ namespace Consumer.MessageHandlers
     {
         public async Task HandleAsync(TestModel message, CancellationToken ct = default)
         {
-            if (true)
+            if (new Random().Next(100) < 50)
             {
                 Console.WriteLine(message.Text + " " + message.Number);
             }

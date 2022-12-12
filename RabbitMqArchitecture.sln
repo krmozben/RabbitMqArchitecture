@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Consumer", "Consumer\Consum
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Publisher", "Publisher\Publisher.csproj", "{CEC72D1D-1711-4A51-84EA-9ED43EEA3E26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPoolPatternExample", "ObjectPoolPatternExample\ObjectPoolPatternExample.csproj", "{B32D7759-14EF-4AC6-B92A-0C178FA09CC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObjectPoolPatternExample", "ObjectPoolPatternExample\ObjectPoolPatternExample.csproj", "{B32D7759-14EF-4AC6-B92A-0C178FA09CC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
